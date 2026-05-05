@@ -56,10 +56,8 @@ def expand_query_with_datamuse(query: str, max_terms: int = 5) -> str:
         return query
 def search_findings(query: str, k: int = 5) -> list[dict]:
     """Retrieve the top-k findings from the corpus most relevant to a query."""
-    print(f"  [debug] search_findings called with query={query!r}, k={k}")
 
     expanded = expand_query_with_datamuse(query)
-    print(f"  [debug] expanded: {expanded[:80]!r}")
 
     embedding_result = voyage_client.embed(
         texts=[expanded],
@@ -68,7 +66,6 @@ def search_findings(query: str, k: int = 5) -> list[dict]:
     )
     query_embedding = embedding_result.embeddings[0]
     query_embedding_str = "[" + ",".join(str(x) for x in query_embedding) + "]"
-    print(f"  [debug] embedding ready, len={len(query_embedding)}")
 
     with get_conn() as conn:
         with conn.cursor() as cur:
@@ -79,8 +76,6 @@ def search_findings(query: str, k: int = 5) -> list[dict]:
                 (query_embedding_str, k),
             )
             rows = cur.fetchall()
-            print(f"  [debug] fetched {len(rows)} rows")
-
     result = [
         {
             "id": str(row[0]),
@@ -93,7 +88,6 @@ def search_findings(query: str, k: int = 5) -> list[dict]:
         }
         for row in rows
     ]
-    print(f"  [debug] returning {len(result)} dicts")
     return result
 # -----------------------------------------------------------------------------
 # Tool 2: find_contradictions
