@@ -63,7 +63,7 @@ docker run -d --name readout-pg \
 
 # Environment variables
 cp .env.example .env
-# Edit .env with your real ANTHROPIC_API_KEY and VOYAGE_API_KEY
+# Edit .env with your real ANTHROPIC_API_KEY and VOYAGE_API_KEY and FIGMA_ACCESS_TOKEN
 
 # Initialize the database schema
 python db.py
@@ -122,11 +122,13 @@ This is a structural defense (the data path itself precludes the failure) rather
 
 ## External API integrations
 
-Per the rubric, two external API integrations beyond the core LLM provider:
+Three external API integrations beyond the core LLM provider:
 
 1. **Voyage-3 embeddings API** — used during ingest to embed each finding, and at query time to embed the user's question for cosine similarity search. Voyage-3 produces 1024-dimensional vectors. Anthropic recommends Voyage as the embedding pairing for Claude.
 
 2. **Datamuse API** — used in `search_findings` to expand the user's query with semantically related terms before embedding. This addresses vocabulary mismatch: when a user asks about "the cart icon" but the report says "shopping bag," pure embedding similarity may miss the connection. Datamuse is free, unauthenticated, and degrades gracefully (search falls back to the original query if Datamuse is unavailable).
+
+3. **Figma REST API** — used for the design-analysis flow. The user pastes a Figma file URL, Readout fetches the file's contents, walks the document tree to extract text from text-layer nodes (filtering out URLs, social handles, and very long paragraphs), and uses the joined text as a semantic query against the research corpus. The result: paste a design, see which UX research findings apply to that screen.
 
 ---
 
@@ -233,7 +235,6 @@ readout/
 
 ## Future work
 
-- Figma integration: paste a Figma file URL, the system fetches text content from the file and uses it as the query context.
 - Theme clustering as a dedicated tool with structured output.
 - Hybrid retrieval (pgvector + BM25) to handle exact-keyword queries that semantic search misses.
 - Multi-agent orchestration: split into a Researcher (retrieves findings) and a Synthesizer (writes the user-facing answer).
