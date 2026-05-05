@@ -5,4 +5,3 @@ __pycache__/
 .DS_Store
 *.egg-info/
 .pytest_cache/
-data/
