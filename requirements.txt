@@ -36,6 +36,7 @@ multidict==6.7.1
 numpy==2.4.4
 orjson==3.11.8
 packaging==26.2
+pgvector==0.4.2
 pillow==12.2.0
 propcache==0.4.1
 psycopg==3.3.4
