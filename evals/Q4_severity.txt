@@ -1,0 +1,32 @@
+Question: What's the most severe issue users had with checkout?
+------------------------------------------------------------
+
+ANSWER
+------------------------------------------------------------
+Based on the search results, the most severe checkout issues all have "high" severity ratings. The most critical appear to be:
+
+1. **Uncertainty about order completion and double-charging** - Users didn't know if their order went through when the total changed at purchase [f-8e71b427], which creates significant anxiety about being charged incorrectly.
+
+2. **Hidden guest checkout option** - Multiple findings show that 5 of 8 participants (on mobile) [f-b053f3af] and 5 of 7 participants (on tablet) [f-94a7bda3] failed to find guest checkout and attempted to back out, which directly causes checkout abandonment.
+
+3. **Late shipping cost disclosure** - 9 of 12 participants reacted negatively when shipping costs appeared only on the payment screen, with 3 explicitly stating they would have abandoned the purchase [f-26d7ccf1].
+
+The order completion uncertainty [f-8e71b427] appears to be the most severe as it creates post-purchase anxiety and potential distrust, while the hidden guest checkout issues [f-b053f3af] [f-94a7bda3] are the most widespread, affecting the majority of users and causing actual abandonment attempts.
+
+CITED FINDINGS
+------------------------------------------------------------
+
+[f-8e71b427] sample_report (page 2, severity=high)
+  "Did it go through? The number jumped right when I tapped it. I have no idea what I just paid. I'd be checking my email right now to make sure I wasn't double-charged."
+
+[f-26d7ccf1] sample_report (page 1, severity=high)
+  "Nine of twelve participants reacted negatively when shipping costs first appeared on the payment screen. Several paused, scrolled back to the cart to verify subtotal, or expressed frustration that the total had changed. Three participants explicitly said they would have abandoned the purchase in real life."
+
+[f-94a7bda3] bluecart_tablet (page 3, severity=high)
+  "Five of the seven first-time users in the study did not initially see the guest option and attempted to back out of checkout."
+
+[f-b053f3af] sample_report (page 2, severity=high)
+  "Five of the eight participants who tested the new-user flow attempted to back out of checkout before locating the guest option. The friction was most pronounced on devices with screen heights under 6 inches."
+
+------------------------------------------------------------
+Agent: 2 iteration(s), 1 tool call(s), terminated by end_turn

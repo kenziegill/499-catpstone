@@ -1,0 +1,28 @@
+Question: Has anyone tested the onboarding flow?
+------------------------------------------------------------
+
+ANSWER
+------------------------------------------------------------
+Based on my search of the research corpus, I found testing related to **new user experiences** but not a formal "onboarding flow" in the traditional sense (like tutorial screens or welcome tours). 
+
+The research includes testing with first-time users focused on:
+- New user checkout flows [f-b053f3af]
+- First-time tablet users trying guest checkout [f-94a7bda3]
+- New users' trust and security concerns [f-cc5e472e]
+
+These studies examined how new users navigate the initial purchase experience, but they don't reference a dedicated product onboarding flow. If you're asking about whether a specific onboarding sequence has been tested, there's no evidence of that in the indexed research.
+
+CITED FINDINGS
+------------------------------------------------------------
+
+[f-b053f3af] sample_report (page 2, severity=high)
+  "Five of the eight participants who tested the new-user flow attempted to back out of checkout before locating the guest option. The friction was most pronounced on devices with screen heights under 6 inches."
+
+[f-cc5e472e] bluecart_desktop (page 3, severity=high)
+  "Four participants—all new to BlueCart—explicitly mentioned wanting to see security or guarantee language before entering card details. Three of those four said they would normally check the URL bar or open a new tab to verify the site at this point."
+
+[f-94a7bda3] bluecart_tablet (page 3, severity=high)
+  "Five of the seven first-time users in the study did not initially see the guest option and attempted to back out of checkout."
+
+------------------------------------------------------------
+Agent: 3 iteration(s), 2 tool call(s), terminated by end_turn

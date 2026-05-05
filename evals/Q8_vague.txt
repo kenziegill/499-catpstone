@@ -1,0 +1,18 @@
+Question: What's interesting in the research?
+------------------------------------------------------------
+
+ANSWER
+------------------------------------------------------------
+I'd be happy to help you explore the research corpus! However, "interesting" can mean different things depending on what you're working on. 
+
+Could you give me a bit more direction? For example, are you interested in:
+- A specific product area (e.g., checkout, navigation, mobile experience)?
+- A particular user behavior or pain point?
+- Findings about a certain feature or design pattern?
+- Recent discoveries or surprising insights?
+- A specific user segment or demographic?
+
+Or, if you'd like a broad overview, I can search for high-level themes or significant findings. Just let me know what aspect of the UX research would be most valuable to you right now!
+
+------------------------------------------------------------
+Agent: 1 iteration(s), 0 tool call(s), terminated by end_turn

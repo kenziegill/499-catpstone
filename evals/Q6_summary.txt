@@ -1,0 +1,67 @@
+Question: Summarize what we know about BlueCart's checkout across all studies.
+------------------------------------------------------------
+
+ANSWER
+------------------------------------------------------------
+Based on my search of the research corpus, here's what we know about BlueCart's checkout:
+
+## Guest Checkout & Account Creation
+Major friction exists with guest checkout visibility. First-time users struggle to find the guest option across devices [f-94a7bda3] [f-b053f3af], with the issue most severe on tablets where the horizontal layout breaks down [f-10c15b23]. Users feel forced to create accounts when they want to make a single purchase [f-a92fd98a].
+
+## Pricing & Transparency
+Shipping costs appearing for the first time on the payment screen causes significant negative reactions, with 9 of 12 participants expressing frustration and 3 stating they would abandon the purchase [f-26d7ccf1]. Users feel uncertain about what they paid when totals change at the moment of purchase, worrying about double-charging [f-8e71b427].
+
+## Promo Codes
+The promo code feature has two key issues: discoverability and feedback. Users miss the promo code link entirely because it resembles footer text rather than an interactive element [f-4274472b] [f-1993bdca]. When codes are applied, the lack of success state confirmation causes users to re-enter codes or assume they failed [f-c7aabd07].
+
+## CTA Placement
+CTA placement preferences differ by device. Mobile users complete checkout faster with the primary button above the fold [f-b9016884], while tablet users consistently scroll past above-the-fold CTAs and only engage when the button is near the order total below the fold [f-9ec44e6f].
+
+## Other Issues
+- Touch targets on tablets use 24px instead of the 44px minimum, causing mis-taps and accidental item removal [f-e1c1aeb9]
+- New users want security and trust indicators before entering payment information [f-cc5e472e]
+
+CITED FINDINGS
+------------------------------------------------------------
+
+[f-94a7bda3] bluecart_tablet (page 3, severity=high)
+  "Five of the seven first-time users in the study did not initially see the guest option and attempted to back out of checkout."
+
+[f-10c15b23] bluecart_tablet (page 3, severity=medium)
+  "The horizontal layout, which works on phone where the link sits directly below the main buttons, breaks down at tablet width."
+
+[f-9ec44e6f] bluecart_tablet (page 3, severity=high)
+  "I did not even see the button up top, I was looking at my cart total. Once I scrolled and saw the button there, that is when I tapped it."
+
+[f-4274472b] sample_report (page 2, severity=medium)
+  "Honestly, I just figured this app didn't do coupons. I scrolled right past it twice. It looks like a footer disclaimer, not a button."
+
+[f-b053f3af] sample_report (page 2, severity=high)
+  "Five of the eight participants who tested the new-user flow attempted to back out of checkout before locating the guest option. The friction was most pronounced on devices with screen heights under 6 inches."
+
+[f-c7aabd07] bluecart_desktop (page 2, severity=high)
+  "When a promo code is applied, the discount appears as a new line in the order summary but the input field itself shows no success state. Eight of fourteen participants re-entered or re-pasted their code, unsure whether the first attempt had worked. Two assumed their code was invalid and abandoned the attempt entirely."
+
+[f-1993bdca] sample_report (page 1, severity=medium)
+  "Seven of twelve participants did not notice it on first pass, and four had to be prompted before they found it. Two participants assumed the app did not support promo"
+
+[f-b9016884] sample_report (page 3, severity=high)
+  "Eight of twelve participants completed checkout faster when the Place Order button was visible without scrolling, and reported feeling more confident the action was available."
+
+[f-e1c1aeb9] bluecart_tablet (page 2, severity=medium)
+  "Quantity adjustment buttons and option dropdowns inherit desktop dimensions (approximately 24px) rather than the 44px minimum recommended for touch. Eight participants mis-tapped at least once when adjusting quantity, and three accidentally removed an item when attempting to decrement."
+
+[f-8e71b427] sample_report (page 2, severity=high)
+  "Did it go through? The number jumped right when I tapped it. I have no idea what I just paid. I'd be checking my email right now to make sure I wasn't double-charged."
+
+[f-cc5e472e] bluecart_desktop (page 3, severity=high)
+  "Four participants—all new to BlueCart—explicitly mentioned wanting to see security or guarantee language before entering card details. Three of those four said they would normally check the URL bar or open a new tab to verify the site at this point."
+
+[f-26d7ccf1] sample_report (page 1, severity=high)
+  "Nine of twelve participants reacted negatively when shipping costs first appeared on the payment screen. Several paused, scrolled back to the cart to verify subtotal, or expressed frustration that the total had changed. Three participants explicitly said they would have abandoned the purchase in real life."
+
+[f-a92fd98a] sample_report (page 2, severity=high)
+  "I'm just trying to buy one thing. I don't want to make an account, remember another password, all that. Why is this in my way?"
+
+------------------------------------------------------------
+Agent: 5 iteration(s), 4 tool call(s), terminated by end_turn
