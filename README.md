@@ -241,15 +241,17 @@ Page 1 of the tablet study (where methodology lives) has zero findings in the da
 
 **What happened (run 2, the same question).** The same question was re-run later in the Streamlit UI. The agent produced a materially different output: it cited actual findings (`[f-ea334c3c]`, `[f-94a7bda3]`), framed numerical claims as "references in findings" rather than direct methodology, and disclosed that "the complete methodology... is not captured in the indexed research findings." Both runs are saved in `evals/` for inspection.
 
-**Root cause analysis.** The failure is a non-deterministic hallucination caused by the interaction of three factors:
+**Root cause analysis.** The failure is grounded confabulation, not pure fabrication. The agent retrieves real page text containing incidental methodology references — page 2 of bluecart_tablet contains "Eight participants mis-tapped at least once," page 2 of bluecart_desktop contains "14 participants," sample_report's findings include participant counts in their text — and synthesizes those scattered references into broader claims about study methodology. The output looks plausible because parts of it are grounded in real source text. But the synthesis loses fidelity in several ways:
 
-1. **Partial signal in retrieval.** When the agent searches for "tablet study methodology," the retriever returns tablet-study findings whose text contains incidental methodology references (participant counts, device descriptions). The agent has *something* to work with, just not the right thing.
+1. **Specific numbers from one study get generalized into ranges across all studies.** A run produced "Sample sizes ranged from 12-14 participants." The actual sample sizes were 12 (sample_report), 14 (bluecart_desktop), and 15 (bluecart_tablet) — so the upper bound was wrong, presented as a confident range.
 
-2. **No "give up after N empty searches" heuristic.** The agent re-searches with different phrasings to be thorough, accumulating context but not finding what it needs. It hits the iteration cap before terminating cleanly.
+2. **Details that appear in one report's findings get implied to apply universally.** Session length ("45-50 minutes"), study duration ("2-3 week periods"), and recruitment screening ("60-day purchase window") were stated as if they were methodology common across the corpus, when they actually vary per study.
 
-3. **Free-form prose is outside the structural anti-hallucination guarantee.** The structural guarantee (the agent outputs only finding IDs; the CLI resolves IDs to verbatim quotes from the DB) protects citation fidelity. It does not protect prose claims that aren't tied to specific findings. In run 1, the fabricated methodology details appeared in the prose without citations — exactly the surface area the structural defense doesn't cover.
+3. **The synthesis is uncited.** None of these claims are tied to a specific finding ID. The structural anti-hallucination guarantee covers cited evidence — the agent never invents finding IDs or fabricates quotes — but it does not cover uncited prose synthesis, which is exactly what this failure is.
 
-**Why the same question produces different outputs.** LLM agents are non-deterministic. Sampling temperature, slight differences in retrieved finding ordering, and context-window state can all push the model toward grounded behavior on one run and confabulation on another. This is a real-world LLM failure pattern, not a one-off bug.
+Notably, in one observed run the agent called `get_finding_context` three times, indicating it does reach for the context-fetch fallback when search isn't producing useful results. The fallback expanded the source material the agent could draw on, which made the confabulation more grounded-sounding but didn't constrain it to be cited. This is the architectural limit: the system has a structural defense for citations and a structural defense for ingest-layer quote fidelity, but no defense for the prose layer in the agent's final answer.
+
+**Why the same question produces different outputs.** LLM agents are non-deterministic. Sampling temperature, slight differences in retrieved finding ordering, and context-window state push the model toward grounded behavior on one run and confabulation on another. The corpus gap (no methodology in extracted findings) plus the partial signal in retrieved page text is the structural setup; the run-to-run variation is the LLM doing what LLMs do.
 
 **What a production fix would look like.** Three options, increasing in complexity:
 
