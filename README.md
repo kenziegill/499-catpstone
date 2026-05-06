@@ -385,17 +385,22 @@ A few things worth calling out, with the reasoning behind them:
 
 ## Project structure
 
+```
 readout/
 ├── db.py                  # Postgres connection + schema initialization
 ├── ingest.py              # PDF → findings → embeddings pipeline
-├── tools.py               # The three agent tools
+├── tools.py               # The three agent tools (search_findings, find_contradictions, get_finding_context)
 ├── agent.py               # Agent loop with Claude Sonnet tool use
 ├── cli.py                 # Typer CLI (ingest, ask)
 ├── app.py                 # Streamlit web UI
+├── figma.py               # Figma REST API integration
 ├── data/                  # Sample PDF research reports
-├── .env.example           # Template for required ariables
+├── evals/                 # Evaluation outputs and screenshots
+├── vulnerability/         # Vulnerability test artifacts and screenshots
+├── .env.example           # Template for required environment variables
 ├── requirements.txt       # Python dependencies
 └── README.md              # This file
+```
 
 ---
 
