@@ -190,12 +190,13 @@ The eight runs surfaced several behavioral patterns worth analyzing.
 Q7 ("What's the methodology of the tablet study?") was the only failing test in the eval suite.
 
 **The setup.** Methodology sections of research reports are deliberately not extracted into the `findings` table — the extractor's system prompt explicitly classifies methodology as out-of-scope ("Do NOT extract methodology, demographics, or background"). This means that when a user asks about a study's methodology, the agent has no methodology findings to retrieve. Verified post-hoc: 
-'''docker exec readout-pg psql -U postgres -d readout -c 
+```
+docker exec readout-pg psql -U postgres -d readout -c 
 "SELECT DISTINCT source_page FROM findings WHERE report_name = 'bluecart_tablet';"
 source_page
        2
        3
-'''
+```
 
 Page 1 of the tablet study (where methodology lives) has zero findings in the database. `get_finding_context` cannot retrieve it because the tool only fetches `page_text` from rows that exist in the findings table.
 
