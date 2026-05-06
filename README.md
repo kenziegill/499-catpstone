@@ -225,7 +225,7 @@ This PoC implements none of these — the failure mode is documented as a known 
 
 ![Q7 second run, showing the agent correctly citing findings and disclosing missing methodology data](evals/screenshot_Q7_Run1_inStreamlit.png)
 
-The screenshot shows the second (grounded) run of Q7 in the Streamlit UI. The agent cites real findings ([f-ea334c3c] for iPad/landscape testing, [f-94a7bda3] for first-time user mix), explicitly disclaims that "the complete methodology... is not captured in the indexed research findings," and offers a redirect. Compare to `evals/Q7_methodology_run1_failure.txt` for the failure run.
+The screenshot shows the second (grounded) run of Q7 in the Streamlit UI. The agent cites real findings ([f-ea334c3c] for iPad/landscape testing, [f-94a7bda3] for first-time user mix), explicitly disclaims that "the complete methodology... is not captured in the indexed research findings," and offers a redirect. Compare to `evals/Q7_methodology_HALLUCINATION.txt` for the failure run.
 
 ---
 
