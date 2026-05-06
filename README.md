@@ -1,6 +1,3 @@
-# 499-catpstone
-TAC 499 Catpstone project.
-
 # Readout
 
 A UX research analyst agent that reasons across a corpus of UX research reports to answer design questions with grounded, cross-study synthesis. Built as a proof-of-concept demonstrating retrieval-augmented generation, multi-step tool use, structured outputs, and structural defenses against citation hallucination.
@@ -15,6 +12,7 @@ A designer asks a question in plain English. The system retrieves relevant findi
 
 Two interfaces: a Typer-based CLI and a Streamlit web UI. Same underlying agent.
 
+'''
 $ python cli.py ask "Do our studies agree on where to place the primary CTA?"
 
 ANSWER
@@ -30,6 +28,7 @@ CITED FINDINGS
 button was visible without scrolling..."
 [f-9ec44e6f] bluecart_tablet (page 3, severity=high)
 "I did not even see the button up top, I was looking at my cart total..."
+'''
 
 ---
 
@@ -191,11 +190,12 @@ The eight runs surfaced several behavioral patterns worth analyzing.
 Q7 ("What's the methodology of the tablet study?") was the only failing test in the eval suite.
 
 **The setup.** Methodology sections of research reports are deliberately not extracted into the `findings` table — the extractor's system prompt explicitly classifies methodology as out-of-scope ("Do NOT extract methodology, demographics, or background"). This means that when a user asks about a study's methodology, the agent has no methodology findings to retrieve. Verified post-hoc: 
-docker exec readout-pg psql -U postgres -d readout -c 
+'''docker exec readout-pg psql -U postgres -d readout -c 
 "SELECT DISTINCT source_page FROM findings WHERE report_name = 'bluecart_tablet';"
 source_page
        2
        3
+'''
 
 Page 1 of the tablet study (where methodology lives) has zero findings in the database. `get_finding_context` cannot retrieve it because the tool only fetches `page_text` from rows that exist in the findings table.
 
