@@ -188,7 +188,7 @@ The eight runs surfaced several behavioral patterns worth analyzing.
 
 ### Documented failure mode: Q7 — narrow context fetch with non-deterministic hallucination
 
-Q7 ("What's the methodology of the tablet study?") was the only failing test in the eval suite. It is documented in detail because the rubric explicitly notes that documenting a persistent failure mode is more valuable than faking 100% success.
+Q7 ("What's the methodology of the tablet study?") was the only failing test in the eval suite.
 
 **The setup.** Methodology sections of research reports are deliberately not extracted into the `findings` table — the extractor's system prompt explicitly classifies methodology as out-of-scope ("Do NOT extract methodology, demographics, or background"). This means that when a user asks about a study's methodology, the agent has no methodology findings to retrieve. Verified post-hoc: 
 docker exec readout-pg psql -U postgres -d readout -c 
