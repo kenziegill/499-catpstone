@@ -12,7 +12,7 @@ A designer asks a question in plain English. The system retrieves relevant findi
 
 Two interfaces: a Typer-based CLI and a Streamlit web UI. Same underlying agent.
 
-'''bash
+```
 $ python cli.py ask "Do our studies agree on where to place the primary CTA?"
 
 ANSWER
@@ -26,10 +26,10 @@ CITED FINDINGS
 [f-b9016884] sample_report (page 3, severity=high)
 "Eight of twelve participants completed checkout faster when the Place Order
 button was visible without scrolling..."
+
 [f-9ec44e6f] bluecart_tablet (page 3, severity=high)
 "I did not even see the button up top, I was looking at my cart total..."
-'''
-
+```
 ---
 
 ## Setup
