@@ -12,7 +12,7 @@ A designer asks a question in plain English. The system retrieves relevant findi
 
 Two interfaces: a Typer-based CLI and a Streamlit web UI. Same underlying agent.
 
-'''
+'''bash
 $ python cli.py ask "Do our studies agree on where to place the primary CTA?"
 
 ANSWER
