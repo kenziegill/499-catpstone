@@ -67,6 +67,14 @@ cp .env.example .env
 # Initialize the database schema
 python db.py
 ```
+### Required environment variables
+
+| Variable | Source | Purpose |
+|----------|--------|---------|
+| `ANTHROPIC_API_KEY` | console.anthropic.com | Agent loop, finding extraction, contradiction detection |
+| `VOYAGE_API_KEY` | dash.voyageai.com (free tier) | Embeddings during ingest and query |
+| `FIGMA_ACCESS_TOKEN` | figma.com → Settings → Personal access tokens | Figma file fetch (only needed for the Figma analysis flow) |
+| `DATABASE_URL` | Auto-set in `.env.example` | Postgres connection (default: `postgresql://postgres:readout@localhost:5432/readout`) |
 
 ### Use it
 
@@ -169,7 +177,7 @@ Aggregate metrics across the 8 test runs:
 
 - **Pass rate:** 7/8 (87.5%)
 - **Mean tool calls per question:** 3.0
-- **Iteration-cap exhaustion rate:** 2/8 (25% — Q3 and Q7)
+- **Iteration-cap exhaustion rate:** 1/8 (12.5% — Q7 only). Q3 also approached the cap (5 tool calls in 6 iterations) but terminated cleanly.
 - **Citation grounding rate:** 100% on passing runs (every cited finding ID resolved to a real DB entry; no hallucinated IDs surfaced)
 - **Average response time per question:** ~15-30 seconds depending on tool-call count
 
@@ -177,13 +185,42 @@ Aggregate metrics across the 8 test runs:
 
 The eight runs surfaced several behavioral patterns worth analyzing.
 
-**Pattern 1: tool-call count adapts to question complexity, validating the non-linear control flow hypothesis.** This was the central architectural bet of the project — that an agent could decide its own tool sequence rather than running a fixed pipeline. The data supports it. Q4 (a focused question about severity) terminated in 1 tool call. Q6 (an explicit "summarize everything" question) used 4 calls to cover the corpus breadth. Q8 (a vague question) used 0 calls and asked for clarification. The agent doesn't have a hardcoded sequence — it calibrates per question.
+**Pattern 1: tool-call count changes based on the question.** This was the main bet of the project — that an agent could decide its own tool sequence instead of running a fixed pipeline. The data shows three different modes:
+
+- Q4 (focused question about severity): 1 tool call. Efficient.
+- Q6 (summarize everything): 4 tool calls covering the breadth of the corpus. Thorough.
+- Q3 (no-coverage question about error messages): 5 tool calls hitting the iteration cap, chasing what wasn't there. Pathological.
+
+The first two are correct adaptive behaviors. The third is a real failure mode — the agent kept searching with different phrasings instead of giving up. See Pattern 3 and the Q7 case study below.
 
 **Pattern 2: contradiction detection works as designed, including the "different scopes ≠ contradiction" rule.** Q2 was specifically engineered to test contradiction detection. The corpus contains a manually-inserted finding pair where mobile users prefer above-the-fold CTAs and tablet users prefer below-the-fold CTAs. The agent surfaced both findings, ran them through `find_contradictions`, and correctly framed the result as "device-specific differences" rather than a true contradiction — matching the system prompt's directive that different scopes don't count as direct contradictions. This is the agent's contradiction-detection working precisely as the prompt specifies.
 
 **Pattern 3: Q7 — non-deterministic hallucination on questions where the corpus has partial signal.** This is the project's most instructive failure mode and is documented in detail below.
 
 **Pattern 4: the agent asks for help on vague questions but attempts inference on specific-but-unanswerable ones.** Q8 ("What's interesting in the research?") was answered with 0 tool calls and a request for clarification. Q7 ("What's the methodology of the tablet study?") was answered with 6 tool calls and confabulated detail. Both are cases where the agent doesn't have a clean answer. The behavioral difference: Q8 is vague enough that the agent recognizes it can't make progress without input; Q7 is specific enough that the agent thinks it can make progress, then over-extends when retrieval doesn't produce real methodology data.
+
+### Note on synthetic corpus generation
+
+The 3 sample reports were generated with Claude. During corpus building, I asked the generator to include two specific things: a CTA placement contradiction across reports, and findings about error messages. Neither made it into the actual generated reports. I had to add the CTA contradiction findings manually via SQL. The error message coverage was simply missing, which is why Q3 ("What did participants say about error messages?") returned no findings.
+
+This is worth flagging because LLM-generated test data is convenient but doesn't reliably include specific things you ask for. For real evaluation work, ground-truth test corpora should be hand-written, or at least checked after generation to confirm the requested content is actually there.
+
+### Quote fidelity check: observed performance during ingest
+
+The deterministic quote fidelity check is the structural defense at the ingest layer — every "verbatim quote" the model produces is verified to actually appear in the source page text before the finding is inserted. Findings that fail this check are dropped.
+
+Across the three sample reports, the check caught a substantial number of model hallucinations:
+
+| Report | Extracted | Dropped | Inserted | Drop rate |
+|--------|-----------|---------|----------|-----------|
+| sample_report | 7 | 1 | 6 | 14% |
+| bluecart_desktop | 8 | 5 | 3 | 63% |
+| bluecart_tablet | 9 | 5 | 4 | 56% |
+| **Total** | **24** | **11** | **13** | **46%** |
+
+In other words, almost half of the findings the extractor proposed had quotes that did not actually appear in the source page. Without the fidelity check, the database would have been seeded with hallucinated quotes from the start, and the structural anti-hallucination guarantee on the query side would have been undermined by bad data on the ingest side.
+
+This is the kind of failure rate that prompt engineering alone cannot fix reliably — the model is genuinely producing plausible-looking but unverifiable quotes 46% of the time. The fix is structural: a deterministic post-check that the rest of the pipeline depends on.
 
 ### Documented failure mode: Q7 — narrow context fetch with non-deterministic hallucination
 
@@ -377,7 +414,7 @@ A few things worth calling out, with the reasoning behind them:
 ## Known limitations
 
 - **Single-language only.** All prompts and the corpus are English. Non-English PDFs would extract text but findings would be poorly handled.
-- **No PII de-identification.** The original proposal called for a regex + Haiku-based PII flagging step. Cut for time. A real deployment would need this — research reports often contain quasi-identifying combinations (role + company size + location).
+- **No PII de-identification.** Research reports in production deployments routinely contain quasi-identifying combinations (role + company size + location) that simple PII scrubbing misses. The proposal sketched a two-pass approach: regex/NER for obvious PII followed by a Haiku classification pass to flag quasi-identifiers for human review before indexing. Out of scope for the PoC because it does not affect demonstration of the core architecture, but it is the most important production hardening item before this system could index real research reports under NDA.
 - **No multi-tenant isolation.** All findings share one database; there's no concept of "this user can only see their team's research."
 - **Synthetic test corpus.** The three included PDFs are AI-generated for the purpose of demonstrating cross-study reasoning. Real research data was not available without NDAs.
 - **The ivfflat index is dropped.** As described in the failure modes section, the index was unusable. For corpus sizes beyond ~10,000 findings, vector search performance would need to be revisited (HNSW or post-ingest ivfflat training).
@@ -411,5 +448,6 @@ readout/
 - Hybrid retrieval (pgvector + BM25) to handle exact-keyword queries that semantic search misses.
 - Multi-agent orchestration: split into a Researcher (retrieves findings) and a Synthesizer (writes the user-facing answer).
 - Per-tenant data isolation for multi-team deployment.
+- A `compare_all_findings` tool for true cross-corpus contradiction scans. Currently the agent only checks contradictions within search-retrieved subsets, so questions like "are there any contradictions in our research?" get a clarification request instead of a real scan.
 
 This PoC is the first step of a larger product to be built during my Garage Experience senior project. The architecture validated here — agent loop, structural citation guarantee, RAG over UX research — is the foundation.
